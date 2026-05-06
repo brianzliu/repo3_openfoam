@@ -2,7 +2,6 @@
 # dependencies = [
 #   "chromadb>=1.0.0,<2",
 #   "python-dotenv>=1.0.0,<2",
-#   "sentence-transformers>=3.0.0,<4",
 # ]
 # ///
 """Build a fresh OpenFOAM ChromaDB without touching the GEOS vector DB."""
@@ -10,9 +9,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
+import re
 import shutil
 from dataclasses import dataclass
+from math import sqrt
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +26,6 @@ from dotenv import load_dotenv
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FOAM_AGENT_ROOT = Path("/home/brianliu/Foam-Agent")
 DEFAULT_DB_DIR = REPO_ROOT / "data" / "openfoam_benchmark" / "chromadb_openfoam"
-DEFAULT_SENTENCE_TRANSFORMER_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DEFAULT_OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
 DEFAULT_OPENROUTER_API_BASE = "https://openrouter.ai/api/v1"
 
@@ -42,6 +43,28 @@ class Chunk:
     identifier: str
     text: str
     metadata: dict[str, Any]
+
+
+class HashEmbeddingFunction:
+    def __init__(self, dims: int = 256) -> None:
+        self.dims = dims
+
+    def name(self) -> str:
+        return "openfoam_hash_embedding"
+
+    def _embed_one(self, text: str) -> list[float]:
+        vector = [0.0] * self.dims
+        tokens = re.findall(r"[A-Za-z0-9_./:+-]+", text.lower())
+        for token in tokens:
+            digest = hashlib.blake2b(token.encode("utf-8"), digest_size=8).digest()
+            bucket = int.from_bytes(digest[:4], "little") % self.dims
+            sign = 1.0 if digest[4] % 2 == 0 else -1.0
+            vector[bucket] += sign
+        norm = sqrt(sum(value * value for value in vector)) or 1.0
+        return [value / norm for value in vector]
+
+    def __call__(self, input: list[str]) -> list[list[float]]:
+        return [self._embed_one(text) for text in input]
 
 
 def chunk_text(text: str, *, chunk_size: int = 1800, overlap: int = 200) -> list[str]:
@@ -172,12 +195,7 @@ def build_embedding_function(provider: str) -> Any:
                 "OPENFOAM_OPENAI_EMBEDDING_MODEL", DEFAULT_OPENAI_EMBEDDING_MODEL
             ),
         )
-    return embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name=os.environ.get(
-            "OPENFOAM_SENTENCE_TRANSFORMER_MODEL",
-            DEFAULT_SENTENCE_TRANSFORMER_MODEL,
-        )
-    )
+    return HashEmbeddingFunction()
 
 
 def main() -> int:
@@ -185,8 +203,8 @@ def main() -> int:
     parser.add_argument("--db-dir", type=Path, default=DEFAULT_DB_DIR)
     parser.add_argument(
         "--embedding-provider",
-        choices=["sentence_transformer", "openai"],
-        default=os.environ.get("OPENFOAM_EMBEDDING_PROVIDER", "sentence_transformer"),
+        choices=["hash", "openai"],
+        default=os.environ.get("OPENFOAM_EMBEDDING_PROVIDER", "hash"),
     )
     parser.add_argument(
         "--force",
@@ -218,11 +236,14 @@ def main() -> int:
             name=collection_name,
             embedding_function=embedding_fn,
         )
-        collection.add(
-            ids=[item.identifier for item in items],
-            documents=[item.text for item in items],
-            metadatas=[item.metadata for item in items],
-        )
+        batch_size = 1000
+        for start in range(0, len(items), batch_size):
+            batch = items[start : start + batch_size]
+            collection.add(
+                ids=[item.identifier for item in batch],
+                documents=[item.text for item in batch],
+                metadatas=[item.metadata for item in batch],
+            )
         print(f"{collection_name}: {len(items)} chunks")
 
     print(f"Built OpenFOAM Chroma DB at {args.db_dir}")

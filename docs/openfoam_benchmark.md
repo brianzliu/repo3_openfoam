@@ -21,10 +21,9 @@ python3 scripts/openfoam/materialize_foamgpt_subset.py
 
 ## 2. Build a fresh OpenFOAM Chroma DB
 
-Local embedding fallback:
+Fast local hash embedding:
 
 ```bash
-HF_HOME=$PWD/.hf-cache \
 uv run --script scripts/openfoam/build_openfoam_chromadb.py --force
 ```
 

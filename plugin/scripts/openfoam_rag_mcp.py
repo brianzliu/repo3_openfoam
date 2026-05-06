@@ -3,15 +3,17 @@
 #   "chromadb>=1.0.0,<2",
 #   "mcp>=1.0.0,<2",
 #   "python-dotenv>=1.0.0,<2",
-#   "sentence-transformers>=3.0.0,<4",
 # ]
 # ///
 """MCP server exposing OpenFOAM ChromaDB retrieval tools."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import re
+from math import sqrt
 from pathlib import Path
 from typing import Any
 
@@ -25,8 +27,7 @@ PLUGIN_ROOT = Path(os.environ.get("CLAUDE_PLUGIN_ROOT", Path(__file__).resolve()
 DEFAULT_VECTOR_DB_DIR = (
     PLUGIN_ROOT.parent / "data" / "openfoam_benchmark" / "chromadb_openfoam"
 )
-DEFAULT_EMBEDDING_PROVIDER = "sentence_transformer"
-DEFAULT_SENTENCE_TRANSFORMER_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_EMBEDDING_PROVIDER = "hash"
 DEFAULT_OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
 DEFAULT_OPENROUTER_API_BASE = "https://openrouter.ai/api/v1"
 
@@ -62,12 +63,31 @@ def _embedding_function() -> Any:
                 "OPENFOAM_OPENAI_EMBEDDING_MODEL", DEFAULT_OPENAI_EMBEDDING_MODEL
             ),
         )
-    return embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name=os.environ.get(
-            "OPENFOAM_SENTENCE_TRANSFORMER_MODEL",
-            DEFAULT_SENTENCE_TRANSFORMER_MODEL,
-        )
-    )
+    return HashEmbeddingFunction()
+
+
+class HashEmbeddingFunction:
+    """Lightweight deterministic embedding for local Chroma use."""
+
+    def __init__(self, dims: int = 256) -> None:
+        self.dims = dims
+
+    def name(self) -> str:
+        return "openfoam_hash_embedding"
+
+    def _embed_one(self, text: str) -> list[float]:
+        vector = [0.0] * self.dims
+        tokens = re.findall(r"[A-Za-z0-9_./:+-]+", text.lower())
+        for token in tokens:
+            digest = hashlib.blake2b(token.encode("utf-8"), digest_size=8).digest()
+            bucket = int.from_bytes(digest[:4], "little") % self.dims
+            sign = 1.0 if digest[4] % 2 == 0 else -1.0
+            vector[bucket] += sign
+        norm = sqrt(sum(value * value for value in vector)) or 1.0
+        return [value / norm for value in vector]
+
+    def __call__(self, input: list[str]) -> list[list[float]]:
+        return [self._embed_one(text) for text in input]
 
 
 class ChromaSearchBackend:
