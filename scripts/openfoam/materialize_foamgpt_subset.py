@@ -81,6 +81,9 @@ def write_task(task_dir: Path, payload: dict[str, Any]) -> None:
         + payload["user_requirement"].strip()
     )
     (task_dir / "instructions.txt").write_text(instructions + "\n", encoding="utf-8")
+    (task_dir / "user_requirement.txt").write_text(
+        payload["user_requirement"].strip() + "\n", encoding="utf-8"
+    )
     (task_dir / "task_manifest.json").write_text(
         json.dumps(
             {
@@ -88,6 +91,7 @@ def write_task(task_dir: Path, payload: dict[str, Any]) -> None:
                 "case_solver": payload["case_solver"],
                 "case_domain": payload["case_domain"],
                 "case_category": payload["case_category"],
+                "user_requirement": payload["user_requirement"],
                 "required_files": payload["required_files"],
             },
             indent=2,

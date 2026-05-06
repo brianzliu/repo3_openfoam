@@ -1,5 +1,5 @@
 {
-  "description": "GEOS XML self-verification hooks. Stop hook (verify_outputs.py) blocks end_turn when /workspace/inputs/ is missing XML files or contains malformed XML. PostToolUse hook (verify_xml_post_write.py) catches XML parse errors immediately after each Write|Edit|MultiEdit so the agent gets feedback within seconds instead of after end-of-turn. Mitigates the minimax/gemma-on-OpenRouter empty-completion + doubled-bracket failures (see docs/XN-010, run7/run9 postmortem).",
+  "description": "OpenFOAM self-verification hooks. Stop hook verifies that the required OpenFOAM case files exist and pass lightweight dictionary-style structural checks. PostToolUse catches malformed OpenFOAM dictionary writes immediately after Write/Edit/MultiEdit.",
   "hooks": {
     "Stop": [
       {
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/verify_xml_post_write.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/verify_openfoam_post_write.py",
             "timeout": 15
           }
         ]

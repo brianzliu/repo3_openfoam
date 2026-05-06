@@ -3,6 +3,7 @@
   "case_solver": "boundaryFoam",
   "case_domain": "incompressible",
   "case_category": "None",
+  "user_requirement": "Do a turbulent boundary layer simulation using boundaryFoam solver with k-epsilon RAS turbulence model. The domain is a rectangular channel with dimensions 0.1 x 2 x 0.1 (convertToMeters = 0.05). Use a structured mesh with 1x80x1 cells (two blocks of 1x40x1 each). Set boundary conditions as: no-slip walls at upper and lower walls with wall functions (nutkWallFunction, kqRWallFunction, epsilonWallFunction, omegaWallFunction), cyclic conditions for front and back faces, and empty type for defaultFaces. Initialize the flow with uniform velocity of (1 0 0) m/s, k=1e-09 m\u00b2/s\u00b2, epsilon=1e-08 m\u00b2/s\u00b3, and omega=1111.11 1/s. Set kinematic viscosity to 1e-8 m\u00b2/s with a target bulk velocity (Ubar) of 10 m/s. Run as steady-state simulation until time=1000 with deltaT=1, writing results every 100 timesteps. Use PISO algorithm with 2 correctors, momentum predictor enabled, and no non-orthogonal correctors. Apply relaxation factors of 0.5 for U and 0.7 for turbulence quantities.",
   "required_files": [
     "0/epsilon",
     "0/k",

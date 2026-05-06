@@ -29,6 +29,7 @@ Thumbs.db
 # Env
 .env
 .env.local
+.hf-cache/
 
 run/geos-agent-dashboard/node_modules/
 run/geos-agent-dashboard/.next/
