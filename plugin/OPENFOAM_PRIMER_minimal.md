@@ -16,10 +16,5 @@ inputs/
   system/      # controlDict, fvSchemes, fvSolution, mesh dictionaries
 ```
 
-## Recommended workflow
-1. Find the nearest matching tutorial pattern via MCP retrieval (`search_tutorials`, `search_cases`, `search_commands`) before guessing solver-specific syntax.
-2. Read the matching tutorial files and mirror their structure for the requested solver family.
-3. Write the required files under `/workspace/inputs/<folder>/<file>`.
-4. Check that cross-file assumptions are consistent: solver family, patch names, turbulence model, field names, and numerics blocks.
-
-That's it.
+## Additional MCP tools
+Find a similar tutorial or case via MCP retrieval (`search_tutorials` for tutorial structure; `search_cases` for detailed dictionary snippets; `search_commands` for utility and command behavior). Use those results before guessing solver-specific syntax or file patterns.
