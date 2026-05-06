@@ -45,6 +45,79 @@ def write_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+def parse_stream_json_tool_metrics(stdout_text: str) -> dict[str, object]:
+    tool_counts: dict[str, int] = {}
+    assistant_messages = 0
+    parse_errors = 0
+
+    def walk(value: object) -> None:
+        nonlocal assistant_messages
+        if isinstance(value, dict):
+            block_type = value.get("type")
+            if block_type == "assistant":
+                assistant_messages += 1
+            if block_type == "tool_use":
+                name = value.get("name") or value.get("tool_name") or "unknown"
+                tool_counts[name] = tool_counts.get(name, 0) + 1
+            if "tool_name" in value and value.get("event") in {"tool_run_ok", "tool_run_error"}:
+                name = str(value.get("tool_name"))
+                tool_counts[name] = tool_counts.get(name, 0) + 1
+            for nested in value.values():
+                walk(nested)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    for line in stdout_text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            parse_errors += 1
+            continue
+        walk(payload)
+
+    mcp_calls = sum(count for name, count in tool_counts.items() if name.startswith("mcp__"))
+    metrics = {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "tool_calls": sum(tool_counts.values()),
+        "assistant_messages": assistant_messages,
+        "mcp_calls": mcp_calls,
+        "tool_counts_by_name": tool_counts,
+        "stream_json_parse_errors": parse_errors,
+    }
+    for tool_name in ("Read", "Grep", "Glob", "Write", "Edit", "Bash"):
+        metrics[f"{tool_name.lower()}_calls"] = tool_counts.get(tool_name, 0)
+    return metrics
+
+
+def aggregate_efficiency(results: list[dict[str, object]]) -> dict[str, object]:
+    completed = [result for result in results if "elapsed_seconds" in result]
+    if not completed:
+        return {}
+
+    def mean_for(key: str) -> float:
+        values = [float(result.get(key, 0)) for result in completed]
+        return round(sum(values) / len(values), 4)
+
+    return {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_tasks": len(completed),
+        "mean_wall_seconds": mean_for("elapsed_seconds"),
+        "mean_tools_per_task": mean_for("tool_calls"),
+        "mean_mcp_calls_per_task": mean_for("mcp_calls"),
+        "mean_assistant_messages_per_task": mean_for("assistant_messages"),
+        "mean_read_calls_per_task": mean_for("read_calls"),
+        "mean_grep_calls_per_task": mean_for("grep_calls"),
+        "mean_glob_calls_per_task": mean_for("glob_calls"),
+        "mean_write_calls_per_task": mean_for("write_calls"),
+        "mean_edit_calls_per_task": mean_for("edit_calls"),
+        "mean_bash_calls_per_task": mean_for("bash_calls"),
+    }
+
+
 def run_one_task(
     *,
     task_dir: Path,
@@ -115,10 +188,13 @@ def run_one_task(
     )
     (result_dir / "stdout.txt").write_text(proc.stdout, encoding="utf-8")
     (result_dir / "stderr.txt").write_text(proc.stderr, encoding="utf-8")
+    efficiency = parse_stream_json_tool_metrics(proc.stdout)
+    efficiency["elapsed_seconds"] = round(time.time() - started, 2)
+    write_json(result_dir / "efficiency.json", efficiency)
     status = {
         "task": task_dir.name,
         "returncode": proc.returncode,
-        "elapsed_seconds": round(time.time() - started, 2),
+        "elapsed_seconds": efficiency["elapsed_seconds"],
         "finished_at": datetime.now(timezone.utc).isoformat(),
     }
     write_json(result_dir / "status.json", status)
@@ -126,6 +202,7 @@ def run_one_task(
         "task": task_dir.name,
         "status": "success" if proc.returncode == 0 else "failed",
         "returncode": proc.returncode,
+        **efficiency,
     }
 
 
@@ -163,7 +240,13 @@ def main() -> int:
         results.append(result)
         print(json.dumps(result))
 
-    write_json(run_root / "run_summary.json", {"results": results})
+    write_json(
+        run_root / "run_summary.json",
+        {
+            "results": results,
+            "efficiency": aggregate_efficiency(results),
+        },
+    )
     return 0
 
 

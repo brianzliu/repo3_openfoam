@@ -7,6 +7,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -38,6 +39,58 @@ def task_dirs(tasks_root: Path, include: list[str] | None) -> list[Path]:
         names = set(include)
         tasks = [task for task in tasks if task.name in names]
     return tasks
+
+
+def parse_foam_agent_efficiency(stdout_text: str) -> dict[str, object]:
+    metrics: dict[str, object] = {
+        "tool_count_definition": "llm_service_calls",
+        "tool_calls": 0,
+        "generated_file_events": stdout_text.count("<generating_file>"),
+        "saved_file_events": stdout_text.count("Saved file at "),
+        "review_loops": stdout_text.count("<reviewer>"),
+        "lint_checker_invocations": stdout_text.count("<lint_checker>"),
+        "retrieval_queries": stdout_text.count("Retrieved 10 candidates from FAISS."),
+    }
+
+    patterns = {
+        "tool_calls": r"Total calls:\s+(\d+)",
+        "failed_calls": r"Failed calls:\s+(\d+)",
+        "retry_count": r"Total retries:\s+(\d+)",
+        "prompt_tokens": r"Total prompt tokens:\s+(\d+)",
+        "completion_tokens": r"Total completion tokens:\s+(\d+)",
+        "total_tokens": r"Total tokens:\s+(\d+)",
+    }
+    for key, pattern in patterns.items():
+        match = re.search(pattern, stdout_text)
+        if match:
+            metrics[key] = int(match.group(1))
+    return metrics
+
+
+def aggregate_efficiency(results: list[dict[str, object]]) -> dict[str, object]:
+    completed = [result for result in results if "elapsed_seconds" in result]
+    if not completed:
+        return {}
+
+    def mean_for(key: str) -> float:
+        values = [float(result.get(key, 0)) for result in completed]
+        return round(sum(values) / len(values), 4)
+
+    summary = {
+        "tool_count_definition": "llm_service_calls",
+        "n_tasks": len(completed),
+        "mean_wall_seconds": mean_for("elapsed_seconds"),
+        "mean_tools_per_task": mean_for("tool_calls"),
+        "mean_prompt_tokens_per_task": mean_for("prompt_tokens"),
+        "mean_completion_tokens_per_task": mean_for("completion_tokens"),
+        "mean_total_tokens_per_task": mean_for("total_tokens"),
+        "mean_generated_file_events_per_task": mean_for("generated_file_events"),
+        "mean_saved_file_events_per_task": mean_for("saved_file_events"),
+        "mean_review_loops_per_task": mean_for("review_loops"),
+        "mean_lint_checker_invocations_per_task": mean_for("lint_checker_invocations"),
+        "mean_retrieval_queries_per_task": mean_for("retrieval_queries"),
+    }
+    return summary
 
 
 def resolve_openfoam_path(cli_value: Path | None) -> Path:
@@ -146,10 +199,13 @@ def run_task(
     )
     (result_dir / "stdout.txt").write_text(proc.stdout, encoding="utf-8")
     (result_dir / "stderr.txt").write_text(proc.stderr, encoding="utf-8")
+    efficiency = parse_foam_agent_efficiency(proc.stdout)
+    efficiency["elapsed_seconds"] = round(time.time() - started, 2)
+    write_json(result_dir / "efficiency.json", efficiency)
     status = {
         "task": task_dir.name,
         "returncode": proc.returncode,
-        "elapsed_seconds": round(time.time() - started, 2),
+        "elapsed_seconds": efficiency["elapsed_seconds"],
         "finished_at": datetime.now(timezone.utc).isoformat(),
     }
     write_json(result_dir / "status.json", status)
@@ -157,6 +213,7 @@ def run_task(
         "task": task_dir.name,
         "status": "success" if proc.returncode == 0 else "failed",
         "returncode": proc.returncode,
+        **efficiency,
     }
     print(json.dumps(result), flush=True)
     return result
@@ -234,6 +291,7 @@ def main() -> int:
             "num_workers": args.num_workers,
             "openfoam_path": str(openfoam_path) if openfoam_path is not None else None,
             "execution_mode": args.execution_mode,
+            "efficiency": aggregate_efficiency(results),
         },
     )
     return 0
