@@ -1,23 +1,13 @@
-# GEOS-plugin
+# repo3_openfoam Plugin
 
-Starter Claude Code plugin scaffold.
+OpenFOAM-focused Claude Code plugin used by the benchmark path in this repo.
 
-## Structure
+## Components
 
-```text
-.
-├── .claude-plugin/
-│   └── plugin.json
-├── skills/
-│   └── plugin-maintainer/
-│       └── SKILL.md
-├── scripts/
-├── bin/
-├── CHANGELOG.md
-└── README.md
-```
-
-Only `.claude-plugin/plugin.json` belongs inside `.claude-plugin/`. Plugin components such as `skills/`, `agents/`, `hooks/`, `scripts/`, and `bin/` belong at the plugin root.
+- `scripts/openfoam_rag_mcp.py`: Chroma-backed OpenFOAM retrieval tools
+- `hooks/verify_outputs.py`: end-of-turn OpenFOAM case validator
+- `hooks/verify_openfoam_post_write.py`: immediate post-write structural validator
+- `skills/openfoam-rag/SKILL.md`: guidance for using the retrieval tools effectively
 
 ## Local Testing
 
@@ -27,20 +17,5 @@ From this directory:
 claude --plugin-dir .
 ```
 
-Inside Claude Code:
-
-```text
-/reload-plugins
-/GEOS-plugin:plugin-maintainer
-```
-
-## Adding Components
-
-- Add reusable workflows under `skills/<name>/SKILL.md`.
-- Add subagents under `agents/<name>.md`.
-- Add lifecycle hooks under `hooks/hooks.json`.
-- Add MCP servers in `.mcp.json`.
-- Add helper scripts under `scripts/`.
-- Add executables that should be available on the Bash `PATH` under `bin/`.
-
-Use `${CLAUDE_PLUGIN_ROOT}` for files shipped with the plugin and `${CLAUDE_PLUGIN_DATA}` for persistent generated state.
+The benchmark scripts in `scripts/openfoam/` assume this plugin is the default
+retrieval and validation layer for `repo3_openfoam`.

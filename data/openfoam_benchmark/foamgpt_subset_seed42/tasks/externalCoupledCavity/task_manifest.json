@@ -1,0 +1,13 @@
+{
+  "case_name": "externalCoupledCavity",
+  "case_solver": "buoyantFoam",
+  "case_domain": "heatTransfer",
+  "case_category": "None",
+  "required_files": [
+    "0/nut",
+    "0/p",
+    "constant/pRef",
+    "constant/physicalProperties",
+    "system/blockMeshDict"
+  ]
+}

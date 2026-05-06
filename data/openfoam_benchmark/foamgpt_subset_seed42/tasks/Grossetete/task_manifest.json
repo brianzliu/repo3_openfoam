@@ -1,0 +1,11 @@
+{
+  "case_name": "Grossetete",
+  "case_solver": "multiphaseEulerFoam",
+  "case_domain": "multiphase",
+  "case_category": "RAS",
+  "required_files": [
+    "0/T.liquid",
+    "constant/physicalProperties.gas",
+    "system/fvSolution"
+  ]
+}

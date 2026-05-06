@@ -1,0 +1,11 @@
+{
+  "case_name": "damBreakWithObstacle",
+  "case_solver": "interFoam",
+  "case_domain": "multiphase",
+  "case_category": "laminar",
+  "required_files": [
+    "constant/momentumTransport",
+    "system/blockMeshDict",
+    "system/setFieldsDict"
+  ]
+}

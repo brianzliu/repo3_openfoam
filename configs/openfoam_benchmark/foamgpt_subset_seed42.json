@@ -1,0 +1,21 @@
+{
+  "subset_name": "foamgpt_subset_seed42",
+  "dataset_path": "/home/brianliu/FoamGPT/foamgpt_test.jsonl",
+  "selection": {
+    "method": "random_sample_unique_case_names",
+    "seed": 42,
+    "sample_size": 5
+  },
+  "model": {
+    "provider": "openrouter",
+    "model": "deepseek/deepseek-v4-flash",
+    "anthropic_base_url": "https://openrouter.ai/api/anthropic"
+  },
+  "cases": [
+    "boundaryWallFunctionsProfile",
+    "Grossetete",
+    "helmholtzResonance",
+    "externalCoupledCavity",
+    "damBreakWithObstacle"
+  ]
+}

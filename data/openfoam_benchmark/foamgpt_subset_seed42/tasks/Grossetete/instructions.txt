@@ -1,0 +1,14 @@
+Create a complete OpenFOAM case for the following specification.
+
+Case name: Grossetete
+Solver: multiphaseEulerFoam
+Domain: multiphase
+Category: RAS
+
+Write the required files under `/workspace/inputs` using these exact paths:
+- 0/T.liquid
+- constant/physicalProperties.gas
+- system/fvSolution
+
+Simulation requirement:
+Do a multiphase Euler-Euler simulation of gas-liquid flow using multiphaseEulerFoam solver. The domain is a cylindrical pipe with length 0.02m and radius 0.01905m, represented as a wedge geometry for axisymmetric simulation. Use k-omega SST Sato turbulence model for liquid phase and continuous gas k-epsilon model for gas phase. The mesh should have 20 cells along length and 40 cells in radial direction with a grading of 0.5 towards the wall. Initial conditions specify liquid volume fraction of 0.9433 and gas volume fraction of 0.0567, with both phases having initial velocity of (0.916 0 0) m/s and temperature of 303K. For boundary conditions: inlet uses mapped values from outlet with fixed average velocities, outlet has pressure-inlet-outlet velocity condition, walls have no-slip condition for liquid and slip condition for gas, and front/back patches are wedge type. Physical properties include: liquid density 995.7 kg/m³, liquid viscosity 7.99e-4 kg/m-s, gas density 1.17 kg/m³, gas viscosity 1.868e-5 kg/m-s, surface tension coefficient 0.071 N/m, and gas bubble diameter 0.0034m. The simulation should run from 0 to 2.0 seconds with initial timestep of 0.001s (adjustable with maxCo=0.25), writing results every 1 second. Use PIMPLE algorithm with 1 outer corrector and 1 inner corrector. Include interfacial forces models: Ishii-Zuber drag, Tomiyama lift with wall damping, Antal wall lubrication, and Burns turbulent dispersion. Gravity is set to (-9.81 0 0) m/s².

@@ -1,7 +1,7 @@
 {
-  "name": "repo3-plugin",
-  "version": "0.2.0",
-  "description": "GEOS-authoring plugin: geos-rag MCP + XML self-verification Stop hook.",
+  "name": "repo3-openfoam-plugin",
+  "version": "0.3.0",
+  "description": "OpenFOAM authoring plugin: OpenFOAM RAG MCP plus case-verification hooks for benchmark runs.",
   "author": {
     "name": "Brian Liu"
   },
@@ -9,18 +9,19 @@
   "keywords": [
     "claude-code",
     "plugin",
-    "skills"
+    "openfoam",
+    "rag"
   ],
   "mcpServers": {
-    "geos-rag": {
+    "openfoam-rag": {
       "command": "uv",
       "args": [
         "run",
         "--script",
-        "${CLAUDE_PLUGIN_ROOT}/scripts/geos_rag_mcp.py"
+        "${CLAUDE_PLUGIN_ROOT}/scripts/openfoam_rag_mcp.py"
       ],
       "env": {
-        "GEOS_VECTOR_DB_DIR": "/data/shared/geophysics_agent_data/data/vector_db"
+        "OPENFOAM_VECTOR_DB_DIR": "${CLAUDE_PLUGIN_ROOT}/../data/openfoam_benchmark/chromadb_openfoam"
       }
     }
   }

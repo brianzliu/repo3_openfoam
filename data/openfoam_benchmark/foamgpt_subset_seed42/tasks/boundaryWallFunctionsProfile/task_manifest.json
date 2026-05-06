@@ -1,0 +1,12 @@
+{
+  "case_name": "boundaryWallFunctionsProfile",
+  "case_solver": "boundaryFoam",
+  "case_domain": "incompressible",
+  "case_category": "None",
+  "required_files": [
+    "0/epsilon",
+    "0/k",
+    "0/omega",
+    "constant/physicalProperties.template"
+  ]
+}

@@ -1,0 +1,13 @@
+Create a complete OpenFOAM case for the following specification.
+
+Case name: helmholtzResonance
+Solver: rhoPimpleFoam
+Domain: compressible
+Category: laminar
+
+Write the required files under `/workspace/inputs` using these exact paths:
+- 0/U
+- constant/physicalProperties
+
+Simulation requirement:
+Do a compressible laminar flow simulation using rhoPimpleFoam solver for a Helmholtz resonator setup. The domain consists of a plenum chamber connected to a main flow passage. Use a mass flow rate of 0.0001 kg/s at the inlet, with fixed temperature of 300K. Set initial pressure to 1e5 Pa throughout the domain with a special plenum pressure boundary condition having gamma=1.4, R=287.04 J/kg-K, plenum volume=0.000125 m³, plenum density=1.1613 kg/m³, and discharge coefficient=0.8. Apply symmetry condition at symmetry patch, zero gradient pressure at walls, and fixed mean pressure (1e5 Pa) at outlet. The fluid is air with molecular weight 28.9 g/mol, specific heat capacity Cv=712 J/kg-K, dynamic viscosity 1.8e-5 kg/m-s, and Prandtl number 0.7. Use PIMPLE algorithm with 3 outer correctors and 1 corrector, with momentum predictor enabled. Run simulation from t=0 to t=0.05s with fixed timestep of 1e-4s and write results every 0.01s. Include pressure probes at locations (-0.045,0,0), (-0.045,0.020,0), (-0.010,0,0), (0.0125,0,0), and (0.0125,0.020,0) meters. The solution uses PCG solver for pressure and density with DIC preconditioner (tolerance 1e-6, relTol 0.01), and symGaussSeidel smoother for velocity and energy equations.

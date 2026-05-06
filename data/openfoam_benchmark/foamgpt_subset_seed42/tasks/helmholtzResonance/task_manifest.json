@@ -1,0 +1,10 @@
+{
+  "case_name": "helmholtzResonance",
+  "case_solver": "rhoPimpleFoam",
+  "case_domain": "compressible",
+  "case_category": "laminar",
+  "required_files": [
+    "0/U",
+    "constant/physicalProperties"
+  ]
+}

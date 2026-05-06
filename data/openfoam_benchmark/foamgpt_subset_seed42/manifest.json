@@ -1,0 +1,74 @@
+{
+  "subset_name": "foamgpt_subset_seed42",
+  "dataset_path": "/home/brianliu/FoamGPT/foamgpt_test.jsonl",
+  "output_root": "/home/brianliu/repo3_openfoam/data/openfoam_benchmark/foamgpt_subset_seed42",
+  "cases": [
+    {
+      "case_name": "boundaryWallFunctionsProfile",
+      "case_solver": "boundaryFoam",
+      "case_domain": "incompressible",
+      "case_category": "None",
+      "required_files": [
+        "0/epsilon",
+        "0/k",
+        "0/omega",
+        "constant/physicalProperties.template"
+      ]
+    },
+    {
+      "case_name": "Grossetete",
+      "case_solver": "multiphaseEulerFoam",
+      "case_domain": "multiphase",
+      "case_category": "RAS",
+      "required_files": [
+        "0/T.liquid",
+        "constant/physicalProperties.gas",
+        "system/fvSolution"
+      ]
+    },
+    {
+      "case_name": "helmholtzResonance",
+      "case_solver": "rhoPimpleFoam",
+      "case_domain": "compressible",
+      "case_category": "laminar",
+      "required_files": [
+        "0/U",
+        "constant/physicalProperties"
+      ]
+    },
+    {
+      "case_name": "externalCoupledCavity",
+      "case_solver": "buoyantFoam",
+      "case_domain": "heatTransfer",
+      "case_category": "None",
+      "required_files": [
+        "0/nut",
+        "0/p",
+        "constant/pRef",
+        "constant/physicalProperties",
+        "system/blockMeshDict"
+      ]
+    },
+    {
+      "case_name": "damBreakWithObstacle",
+      "case_solver": "interFoam",
+      "case_domain": "multiphase",
+      "case_category": "laminar",
+      "required_files": [
+        "constant/momentumTransport",
+        "system/blockMeshDict",
+        "system/setFieldsDict"
+      ]
+    }
+  ],
+  "selection": {
+    "method": "random_sample_unique_case_names",
+    "seed": 42,
+    "sample_size": 5
+  },
+  "model": {
+    "provider": "openrouter",
+    "model": "deepseek/deepseek-v4-flash",
+    "anthropic_base_url": "https://openrouter.ai/api/anthropic"
+  }
+}
