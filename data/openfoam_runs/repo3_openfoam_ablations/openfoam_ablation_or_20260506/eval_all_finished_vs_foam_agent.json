@@ -1,0 +1,779 @@
+{
+  "benchmark_root": "/home/brianliu/repo3_openfoam/data/openfoam_benchmark/foamgpt_subset_seed42",
+  "results": {
+    "vanilla": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/vanilla",
+      "n_cases": 5,
+      "mean_overall_score": 0.46599373849379777,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.644339699691002,
+          "overall_score": 0.7510377897837014
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.738613818238259,
+          "overall_score": 0.8170296727667812
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [
+            "0/U",
+            "constant/physicalProperties"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6598588998835803,
+          "overall_score": 0.7619012299185062
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [
+            "constant/momentumTransport",
+            "system/blockMeshDict",
+            "system/setFieldsDict"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 1920.724,
+        "mean_tools_per_task": 86.0,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 34.0,
+        "mean_grep_calls_per_task": 0.8,
+        "mean_glob_calls_per_task": 0.6,
+        "mean_write_calls_per_task": 15.4,
+        "mean_edit_calls_per_task": 0.0,
+        "mean_bash_calls_per_task": 32.0,
+        "mean_assistant_messages_per_task": 148.0
+      }
+    },
+    "r_plus_m": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/r_plus_m",
+      "n_cases": 5,
+      "mean_overall_score": 0.7356887969822187,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.4995043961938892,
+          "overall_score": 0.6496530773357224
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.7377901108576004,
+          "overall_score": 0.8164530776003203
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.5436703455524898,
+          "overall_score": 0.6805692418867428
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 1.0,
+          "mean_similarity": 1.0,
+          "overall_score": 1.0
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.3310979829832972,
+          "overall_score": 0.531768588088308
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 1275.89,
+        "mean_tools_per_task": 58.0,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 22.4,
+        "mean_grep_calls_per_task": 0.6,
+        "mean_glob_calls_per_task": 0.0,
+        "mean_write_calls_per_task": 8.8,
+        "mean_edit_calls_per_task": 1.6,
+        "mean_bash_calls_per_task": 20.8,
+        "mean_assistant_messages_per_task": 104.0
+      }
+    },
+    "s_plus_m": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/s_plus_m",
+      "n_cases": 5,
+      "mean_overall_score": 0.7865423169127068,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.800442194236792,
+          "overall_score": 0.8603095359657544
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.9515397894256336,
+          "overall_score": 0.9660778525979434
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6976512284495705,
+          "overall_score": 0.7883558599146994
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.4219340071527268,
+          "overall_score": 0.5953538050069087
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.3333333333333333,
+          "mean_similarity": 0.6037350443974691,
+          "overall_score": 0.7226145310782284
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 1481.656,
+        "mean_tools_per_task": 73.8,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 23.4,
+        "mean_grep_calls_per_task": 0.6,
+        "mean_glob_calls_per_task": 0.4,
+        "mean_write_calls_per_task": 22.8,
+        "mean_edit_calls_per_task": 4.4,
+        "mean_bash_calls_per_task": 19.4,
+        "mean_assistant_messages_per_task": 148.8
+      }
+    },
+    "r_plus_s": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/r_plus_s",
+      "n_cases": 5,
+      "mean_overall_score": 0.8710524312138297,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.25,
+          "mean_similarity": 0.8677359540879103,
+          "overall_score": 0.9074151678615372
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.9544350904881432,
+          "overall_score": 0.9681045633417003
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.7966326969120265,
+          "overall_score": 0.8576428878384186
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.8564071513560918,
+          "overall_score": 0.8994850059492643
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.3333333333333333,
+          "mean_similarity": 0.6037350443974691,
+          "overall_score": 0.7226145310782284
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 380.194,
+        "mean_tools_per_task": 86.0,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 32.4,
+        "mean_grep_calls_per_task": 0.2,
+        "mean_glob_calls_per_task": 0.8,
+        "mean_write_calls_per_task": 22.6,
+        "mean_edit_calls_per_task": 0.0,
+        "mean_bash_calls_per_task": 25.4,
+        "mean_assistant_messages_per_task": 138.8
+      }
+    },
+    "x_plus_m": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/x_plus_m",
+      "n_cases": 5,
+      "mean_overall_score": 0.7120106605646807,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.5991006502308672,
+          "overall_score": 0.719370455161607
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.7434007335529559,
+          "overall_score": 0.820380513487069
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6098646587876477,
+          "overall_score": 0.7269052611513533
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6598588998835803,
+          "overall_score": 0.7619012299185062
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.3307083472926679,
+          "overall_score": 0.5314958431048675
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 1643.576,
+        "mean_tools_per_task": 83.8,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 33.6,
+        "mean_grep_calls_per_task": 2.4,
+        "mean_glob_calls_per_task": 0.8,
+        "mean_write_calls_per_task": 14.8,
+        "mean_edit_calls_per_task": 0.6,
+        "mean_bash_calls_per_task": 27.0,
+        "mean_assistant_messages_per_task": 156.0
+      }
+    },
+    "r_plus_x": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/r_plus_x",
+      "n_cases": 5,
+      "mean_overall_score": 0.14478143740466026,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6055816957475734,
+          "overall_score": 0.7239071870233014
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [
+            "0/T.liquid",
+            "constant/physicalProperties.gas",
+            "system/fvSolution"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [
+            "0/U",
+            "constant/physicalProperties"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [
+            "0/nut",
+            "0/p",
+            "constant/pRef",
+            "constant/physicalProperties",
+            "system/blockMeshDict"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [
+            "constant/momentumTransport",
+            "system/blockMeshDict",
+            "system/setFieldsDict"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 777.546,
+        "mean_tools_per_task": 97.4,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 37.0,
+        "mean_grep_calls_per_task": 0.6,
+        "mean_glob_calls_per_task": 0.8,
+        "mean_write_calls_per_task": 17.0,
+        "mean_edit_calls_per_task": 0.2,
+        "mean_bash_calls_per_task": 35.8,
+        "mean_assistant_messages_per_task": 157.6
+      }
+    },
+    "s_plus_x": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/s_plus_x",
+      "n_cases": 5,
+      "mean_overall_score": 0.8486609600578215,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.25,
+          "mean_similarity": 0.950129949901999,
+          "overall_score": 0.9650909649313992
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.8135395374647563,
+          "overall_score": 0.8694776762253293
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6951793115876734,
+          "overall_score": 0.7866255181113714
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.8561813305388863,
+          "overall_score": 0.8993269313772203
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.3333333333333333,
+          "mean_similarity": 0.6039767280625534,
+          "overall_score": 0.7227837096437874
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 1020.296,
+        "mean_tools_per_task": 91.8,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 36.4,
+        "mean_grep_calls_per_task": 0.6,
+        "mean_glob_calls_per_task": 1.2,
+        "mean_write_calls_per_task": 17.4,
+        "mean_edit_calls_per_task": 1.4,
+        "mean_bash_calls_per_task": 31.0,
+        "mean_assistant_messages_per_task": 192.2
+      }
+    },
+    "r_plus_s_plus_x_plus_m": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/r_plus_s_plus_x_plus_m",
+      "n_cases": 5,
+      "mean_overall_score": 0.8622586951673149,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.25,
+          "mean_similarity": 0.9479616868542597,
+          "overall_score": 0.9635731807979817
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.9522832735132946,
+          "overall_score": 0.9665982914593061
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6574848319363518,
+          "overall_score": 0.7602393823554462
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.8561813305388863,
+          "overall_score": 0.8993269313772203
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.3333333333333333,
+          "mean_similarity": 0.6022224140666006,
+          "overall_score": 0.7215556898466204
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 1419.004,
+        "mean_tools_per_task": 113.4,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 42.2,
+        "mean_grep_calls_per_task": 1.2,
+        "mean_glob_calls_per_task": 1.6,
+        "mean_write_calls_per_task": 24.4,
+        "mean_edit_calls_per_task": 2.2,
+        "mean_bash_calls_per_task": 35.0,
+        "mean_assistant_messages_per_task": 194.0
+      }
+    },
+    "s_plus_x_plus_m": {
+      "run_dir": "data/openfoam_runs/repo3_openfoam_ablations/openfoam_ablation_or_20260506/s_plus_x_plus_m",
+      "n_cases": 5,
+      "mean_overall_score": 0.821953763436327,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.7243769251995213,
+          "overall_score": 0.807063847639665
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6971924323383587,
+          "overall_score": 0.788034702636851
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.7856277598201329,
+          "overall_score": 0.8499394318740929
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.9187491903685046,
+          "overall_score": 0.9431244332579531
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.3333333333333333,
+          "mean_similarity": 0.6022948596758184,
+          "overall_score": 0.7216064017730728
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "claude_stream_json_tool_use_blocks",
+        "n_cases": 5,
+        "mean_wall_seconds": 1147.374,
+        "mean_tools_per_task": 89.4,
+        "mean_mcp_calls_per_task": 0.0,
+        "mean_read_calls_per_task": 35.2,
+        "mean_grep_calls_per_task": 1.4,
+        "mean_glob_calls_per_task": 1.0,
+        "mean_write_calls_per_task": 17.4,
+        "mean_edit_calls_per_task": 1.4,
+        "mean_bash_calls_per_task": 28.4,
+        "mean_assistant_messages_per_task": 166.8
+      }
+    },
+    "foam_agent_lint": {
+      "run_dir": "data/openfoam_runs/foam_agent/dsv4_seed42_lint",
+      "n_cases": 5,
+      "mean_overall_score": 0.5687523578125957,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [
+            "constant/physicalProperties.template"
+          ],
+          "coverage": 0.75,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6170643596829167,
+          "overall_score": 0.6569450517780417
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [
+            "0/T.liquid",
+            "constant/physicalProperties.gas"
+          ],
+          "coverage": 0.33333333333333337,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.09293785310734463,
+          "overall_score": 0.16505649717514126
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.4991803962460897,
+          "overall_score": 0.6494262773722628
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.4806382002906084,
+          "overall_score": 0.6364467402034258
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [],
+          "coverage": 1.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.6226960321915811,
+          "overall_score": 0.7358872225341067
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "llm_service_calls",
+        "n_cases": 5,
+        "mean_wall_seconds": 546.622,
+        "mean_tools_per_task": 3.0,
+        "mean_prompt_tokens_per_task": 1590.6,
+        "mean_completion_tokens_per_task": 7.0,
+        "mean_total_tokens_per_task": 1597.6,
+        "mean_generated_file_events_per_task": 17.6,
+        "mean_saved_file_events_per_task": 20.4,
+        "mean_review_loops_per_task": 0.6,
+        "mean_lint_checker_invocations_per_task": 1.6,
+        "mean_retrieval_queries_per_task": 1.0
+      }
+    },
+    "foam_agent_execute_failed": {
+      "run_dir": "data/openfoam_runs/foam_agent/baseline_subset_rerun_uv_20260506",
+      "n_cases": 5,
+      "mean_overall_score": 0.0,
+      "per_case": [
+        {
+          "case_name": "boundaryWallFunctionsProfile",
+          "required_file_count": 4,
+          "missing_files": [
+            "0/epsilon",
+            "0/k",
+            "0/omega",
+            "constant/physicalProperties.template"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "Grossetete",
+          "required_file_count": 3,
+          "missing_files": [
+            "0/T.liquid",
+            "constant/physicalProperties.gas",
+            "system/fvSolution"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "helmholtzResonance",
+          "required_file_count": 2,
+          "missing_files": [
+            "0/U",
+            "constant/physicalProperties"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "externalCoupledCavity",
+          "required_file_count": 5,
+          "missing_files": [
+            "0/nut",
+            "0/p",
+            "constant/pRef",
+            "constant/physicalProperties",
+            "system/blockMeshDict"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        },
+        {
+          "case_name": "damBreakWithObstacle",
+          "required_file_count": 3,
+          "missing_files": [
+            "constant/momentumTransport",
+            "system/blockMeshDict",
+            "system/setFieldsDict"
+          ],
+          "coverage": 0.0,
+          "exact_match_rate": 0.0,
+          "mean_similarity": 0.0,
+          "overall_score": 0.0
+        }
+      ],
+      "efficiency": {
+        "tool_count_definition": "llm_service_calls",
+        "n_cases": 5,
+        "mean_wall_seconds": 1.992,
+        "mean_tools_per_task": 0.0,
+        "mean_generated_file_events_per_task": 0.0,
+        "mean_saved_file_events_per_task": 0.0,
+        "mean_review_loops_per_task": 0.0,
+        "mean_lint_checker_invocations_per_task": 0.0,
+        "mean_retrieval_queries_per_task": 0.0
+      }
+    }
+  }
+}

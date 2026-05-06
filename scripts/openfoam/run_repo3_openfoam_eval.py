@@ -21,7 +21,7 @@ DEFAULT_TASKS_ROOT = (
 DEFAULT_RESULTS_ROOT = REPO_ROOT / "data" / "openfoam_runs" / "repo3_openfoam"
 DEFAULT_PLUGIN_DIR = REPO_ROOT / "plugin"
 DEFAULT_MODEL = "deepseek/deepseek-v4-flash"
-DEFAULT_API_BASE = "https://openrouter.ai/api/anthropic"
+DEFAULT_API_BASE = "https://openrouter.ai/api"
 
 
 def load_prompt(task_dir: Path) -> str:
@@ -140,6 +140,7 @@ def run_one_task(
     cmd = [
         "claude",
         "-p",
+        "--verbose",
         "--model",
         model,
         "--append-system-prompt",
@@ -156,8 +157,11 @@ def run_one_task(
     openrouter_key = os.environ.get("OPENROUTER_API_KEY", "")
     env = os.environ.copy()
     env["ANTHROPIC_BASE_URL"] = api_base
-    env["ANTHROPIC_API_KEY"] = openrouter_key
     env["ANTHROPIC_AUTH_TOKEN"] = openrouter_key
+    env["ANTHROPIC_API_KEY"] = ""
+    if model and "/" in model:
+        env["ANTHROPIC_CUSTOM_MODEL_OPTION"] = model
+        env["ANTHROPIC_CUSTOM_MODEL_OPTION_NAME"] = f"{model} via gateway"
     env["CLAUDE_PROJECT_DIR"] = str(result_dir)
     env["OPENFOAM_VECTOR_DB_DIR"] = str(vector_db_dir)
     env["OPENFOAM_HOOK_INPUTS_DIR"] = str(result_dir / "inputs")

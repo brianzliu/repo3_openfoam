@@ -15,6 +15,13 @@ if str(HERE) not in sys.path:
 from openfoam_case_check import validate_openfoam_file
 
 
+def _envflag(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _workspace_root() -> Path:
     project = os.environ.get("CLAUDE_PROJECT_DIR")
     if project:
@@ -53,6 +60,9 @@ def _collect_paths(payload: dict) -> list[Path]:
 
 
 def main() -> None:
+    if _envflag("OPENFOAM_HOOK_DISABLE"):
+        _allow()
+
     try:
         payload = json.load(sys.stdin)
     except json.JSONDecodeError:
