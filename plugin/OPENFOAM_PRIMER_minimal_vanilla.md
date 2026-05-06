@@ -15,11 +15,3 @@ inputs/
   constant/    # physical properties, turbulence / transport models
   system/      # controlDict, fvSchemes, fvSolution, mesh dictionaries
 ```
-
-## Recommended workflow
-1. Find the nearest matching tutorial using `Glob`, `Grep`, and `Read` against `/data/brianliu/OpenFOAM-13/tutorials/` and `/data/brianliu/OpenFOAM-13/src/`.
-2. Read the matching tutorial files and mirror their structure for the requested solver family.
-3. Write the required files under `/workspace/inputs/<folder>/<file>`.
-4. Check that cross-file assumptions are consistent: solver family, patch names, turbulence model, field names, and numerics blocks.
-
-That's it.
