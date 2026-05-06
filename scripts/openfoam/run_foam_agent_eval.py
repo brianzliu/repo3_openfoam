@@ -21,6 +21,7 @@ DEFAULT_TASKS_ROOT = (
 DEFAULT_RESULTS_ROOT = REPO_ROOT / "data" / "openfoam_runs" / "foam_agent"
 DEFAULT_MODEL = "deepseek/deepseek-v4-flash"
 DEFAULT_OPENAI_BASE_URL = "https://openrouter.ai/api/v1"
+DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 
 
 def write_json(path: Path, payload: dict) -> None:
@@ -43,6 +44,7 @@ def main() -> int:
     parser.add_argument("--results-root", type=Path, default=DEFAULT_RESULTS_ROOT)
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--openai-base-url", default=DEFAULT_OPENAI_BASE_URL)
+    parser.add_argument("--embedding-model", default=DEFAULT_EMBEDDING_MODEL)
     parser.add_argument("--include", nargs="+")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -68,6 +70,8 @@ def main() -> int:
             "task": task_dir.name,
             "model": args.model,
             "openai_base_url": args.openai_base_url,
+            "embedding_provider": "openai",
+            "embedding_model": args.embedding_model,
             "prompt_path": str(prompt_path),
             "command": cmd,
             "dry_run": args.dry_run,
@@ -84,8 +88,18 @@ def main() -> int:
         env = os.environ.copy()
         env["FOAMAGENT_MODEL_PROVIDER"] = "openai"
         env["FOAMAGENT_MODEL_VERSION"] = args.model
+        env["FOAMAGENT_EMBEDDING_PROVIDER"] = "openai"
+        env["FOAMAGENT_EMBEDDING_MODEL"] = args.embedding_model
         env["OPENAI_API_KEY"] = openrouter_key
         env["OPENAI_BASE_URL"] = args.openai_base_url
+        env["CUDA_VISIBLE_DEVICES"] = ""
+        hf_home = str(FOAM_AGENT_ROOT / ".hf-cache")
+        env["HF_HOME"] = hf_home
+        env["HUGGINGFACE_HUB_CACHE"] = str(Path(hf_home) / "hub")
+        env["TRANSFORMERS_CACHE"] = str(Path(hf_home) / "transformers")
+        Path(env["HF_HOME"]).mkdir(parents=True, exist_ok=True)
+        Path(env["HUGGINGFACE_HUB_CACHE"]).mkdir(parents=True, exist_ok=True)
+        Path(env["TRANSFORMERS_CACHE"]).mkdir(parents=True, exist_ok=True)
 
         started = time.time()
         proc = subprocess.run(
