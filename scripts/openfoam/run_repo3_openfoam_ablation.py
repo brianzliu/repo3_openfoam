@@ -26,6 +26,24 @@ DEFAULT_API_BASE = "https://openrouter.ai/api"
 DEFAULT_VECTOR_DB_DIR = REPO_ROOT / "data" / "openfoam_benchmark" / "chromadb_openfoam"
 RUNTIME_PLUGIN_ROOT = REPO_ROOT / "data" / "openfoam_runs" / "_runtime_openfoam_plugins"
 
+# OpenRouter effective pricing for deepseek/deepseek-v4-flash (2026-05-30):
+# https://openrouter.ai/deepseek/deepseek-v4-flash
+OPENROUTER_INPUT_PRICE_PER_M = 0.0983
+OPENROUTER_OUTPUT_PRICE_PER_M = 0.1966
+PRICE_SOURCE = (
+    "OpenRouter effective pricing 2026-05-30: "
+    f"input ${OPENROUTER_INPUT_PRICE_PER_M}/M, output ${OPENROUTER_OUTPUT_PRICE_PER_M}/M"
+)
+
+
+def estimate_openrouter_cost(prompt_tokens: float, completion_tokens: float) -> float:
+    return round(
+        prompt_tokens / 1_000_000 * OPENROUTER_INPUT_PRICE_PER_M
+        + completion_tokens / 1_000_000 * OPENROUTER_OUTPUT_PRICE_PER_M,
+        6,
+    )
+
+
 CELL_ORDER = [
     "vanilla",
     "r+m",
@@ -121,6 +139,90 @@ def parse_stream_json_tool_metrics(stdout_text: str) -> dict[str, object]:
     return metrics
 
 
+def parse_stream_json_token_usage(stdout_text: str, model: str) -> dict[str, object]:
+    """Extract real token usage from the Claude Code stream-json ``result`` event.
+
+    Per-assistant-message ``usage`` blocks are zeroed for OpenRouter-routed
+    models, but the terminal ``result`` event carries the true totals in
+    ``usage`` plus a per-model breakdown in ``modelUsage``. We separate the
+    benchmark agent model (deepseek) from Claude Code's internal helper model
+    (haiku, used for quota/titling) so token/cost figures are apples-to-apples
+    with Foam Agent and MetaOpenFOAM, which only call the agent model.
+    """
+    result_event: dict | None = None
+    for line in stdout_text.splitlines():
+        line = line.strip()
+        if not line or '"type":"result"' not in line:
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict) and payload.get("type") == "result":
+            result_event = payload  # keep the last result event
+
+    metrics: dict[str, object] = {
+        "token_usage_found": result_event is not None,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "agent_model_input_tokens": 0,
+        "agent_model_output_tokens": 0,
+        "agent_model_total_tokens": 0,
+        "helper_model_input_tokens": 0,
+        "helper_model_output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+    }
+    if result_event is None:
+        return metrics
+
+    model_usage = result_event.get("modelUsage")
+    if isinstance(model_usage, dict) and model_usage:
+        for name, usage in model_usage.items():
+            if not isinstance(usage, dict):
+                continue
+            in_tok = int(usage.get("inputTokens", 0) or 0)
+            out_tok = int(usage.get("outputTokens", 0) or 0)
+            is_helper = "claude" in name.lower() or "haiku" in name.lower()
+            if is_helper:
+                metrics["helper_model_input_tokens"] += in_tok
+                metrics["helper_model_output_tokens"] += out_tok
+            else:
+                metrics["agent_model_input_tokens"] += in_tok
+                metrics["agent_model_output_tokens"] += out_tok
+                metrics["cache_read_input_tokens"] += int(usage.get("cacheReadInputTokens", 0) or 0)
+                metrics["cache_creation_input_tokens"] += int(usage.get("cacheCreationInputTokens", 0) or 0)
+        metrics["agent_model_total_tokens"] = (
+            metrics["agent_model_input_tokens"] + metrics["agent_model_output_tokens"]
+        )
+    else:
+        # Fall back to the top-level usage block (this is the main agent model).
+        usage = result_event.get("usage") or {}
+        metrics["agent_model_input_tokens"] = int(usage.get("input_tokens", 0) or 0)
+        metrics["agent_model_output_tokens"] = int(usage.get("output_tokens", 0) or 0)
+        metrics["agent_model_total_tokens"] = (
+            metrics["agent_model_input_tokens"] + metrics["agent_model_output_tokens"]
+        )
+        metrics["cache_read_input_tokens"] = int(usage.get("cache_read_input_tokens", 0) or 0)
+        metrics["cache_creation_input_tokens"] = int(usage.get("cache_creation_input_tokens", 0) or 0)
+
+    # Primary input/output/total = agent model (deepseek) for cross-agent parity.
+    metrics["input_tokens"] = metrics["agent_model_input_tokens"]
+    metrics["output_tokens"] = metrics["agent_model_output_tokens"]
+    metrics["total_tokens"] = metrics["agent_model_total_tokens"]
+    metrics["estimated_openrouter_cost_usd"] = estimate_openrouter_cost(
+        float(metrics["agent_model_input_tokens"]),
+        float(metrics["agent_model_output_tokens"]),
+    )
+    metrics["cost_price_source"] = PRICE_SOURCE
+    # Claude Code's own total_cost_usd is computed with Anthropic pricing applied
+    # to OpenRouter-routed tokens, so it is NOT real billing; keep it labeled.
+    if "total_cost_usd" in result_event:
+        metrics["claude_reported_cost_usd_not_billing"] = result_event.get("total_cost_usd")
+    return metrics
+
+
 def aggregate_efficiency(results: list[dict[str, object]]) -> dict[str, object]:
     completed = [result for result in results if "elapsed_seconds" in result]
     if not completed:
@@ -129,6 +231,11 @@ def aggregate_efficiency(results: list[dict[str, object]]) -> dict[str, object]:
     def mean_for(key: str) -> float:
         values = [float(result.get(key, 0)) for result in completed]
         return round(sum(values) / len(values), 4)
+
+    total_input = sum(float(result.get("input_tokens", 0) or 0) for result in completed)
+    total_output = sum(float(result.get("output_tokens", 0) or 0) for result in completed)
+    total_tokens = sum(float(result.get("total_tokens", 0) or 0) for result in completed)
+    n_with_tokens = sum(1 for result in completed if result.get("token_usage_found"))
 
     return {
         "tool_count_definition": "claude_stream_json_tool_use_blocks",
@@ -143,6 +250,18 @@ def aggregate_efficiency(results: list[dict[str, object]]) -> dict[str, object]:
         "mean_write_calls_per_task": mean_for("write_calls"),
         "mean_edit_calls_per_task": mean_for("edit_calls"),
         "mean_bash_calls_per_task": mean_for("bash_calls"),
+        "tokens_definition": "agent_model_only_deepseek_from_stream_json_result_event",
+        "n_tasks_with_token_usage": n_with_tokens,
+        "mean_input_tokens_per_task": mean_for("input_tokens"),
+        "mean_output_tokens_per_task": mean_for("output_tokens"),
+        "mean_total_tokens_per_task": mean_for("total_tokens"),
+        "mean_helper_model_input_tokens_per_task": mean_for("helper_model_input_tokens"),
+        "mean_helper_model_output_tokens_per_task": mean_for("helper_model_output_tokens"),
+        "total_input_tokens": int(total_input),
+        "total_output_tokens": int(total_output),
+        "total_tokens": int(total_tokens),
+        "estimated_openrouter_cost_usd": estimate_openrouter_cost(total_input, total_output),
+        "cost_price_source": PRICE_SOURCE,
     }
 
 
@@ -271,6 +390,7 @@ def run_one_task(
     config: CellConfig,
     api_key_env: str,
     dry_run: bool,
+    task_timeout: float | None = None,
 ) -> dict[str, object]:
     result_dir.mkdir(parents=True, exist_ok=True)
     (result_dir / "inputs").mkdir(exist_ok=True)
@@ -280,6 +400,13 @@ def run_one_task(
     shutil.copy2(task_dir / "user_requirement.txt", result_dir / "user_requirement.txt")
 
     prompt = (task_dir / "instructions.txt").read_text(encoding="utf-8")
+    # Bind the symbolic "/workspace" path to this task's actual result_dir so
+    # parallel tasks do not collide on a shared on-host path. Both the user
+    # prompt (instructions) and the system prompt reference "/workspace"; both
+    # need the substitution.
+    workspace_abs = str(result_dir.resolve())
+    prompt = prompt.replace("/workspace", workspace_abs)
+    task_system_prompt = system_prompt.replace("/workspace", workspace_abs)
     cmd = [
         "claude",
         "-p",
@@ -290,7 +417,7 @@ def run_one_task(
     cmd.extend(
         [
             "--append-system-prompt",
-            system_prompt,
+            task_system_prompt,
             f"--plugin-dir={plugin_dir}",
             "--output-format",
             "stream-json",
@@ -341,29 +468,50 @@ def run_one_task(
         raise RuntimeError(f"{api_key_env} is required unless --dry-run is set")
 
     started = time.time()
-    proc = subprocess.run(
-        cmd,
-        cwd=result_dir,
-        env=env,
-        text=True,
-        capture_output=True,
-    )
-    (result_dir / "stdout.txt").write_text(proc.stdout, encoding="utf-8")
-    (result_dir / "stderr.txt").write_text(proc.stderr, encoding="utf-8")
-    efficiency = parse_stream_json_tool_metrics(proc.stdout)
+    timed_out = False
+    stdout_text = ""
+    stderr_text = ""
+    returncode: int | None = None
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=result_dir,
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=task_timeout,
+        )
+        stdout_text = proc.stdout
+        stderr_text = proc.stderr
+        returncode = proc.returncode
+    except subprocess.TimeoutExpired as exc:
+        timed_out = True
+        stdout_text = exc.stdout.decode("utf-8", errors="ignore") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
+        stderr_text = exc.stderr.decode("utf-8", errors="ignore") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
+        stderr_text = (stderr_text or "") + f"\n[ablation] task killed after {task_timeout}s timeout\n"
+        returncode = 124  # convention: GNU timeout exit code
+    (result_dir / "stdout.txt").write_text(stdout_text, encoding="utf-8")
+    (result_dir / "stderr.txt").write_text(stderr_text, encoding="utf-8")
+    efficiency = parse_stream_json_tool_metrics(stdout_text)
+    efficiency.update(parse_stream_json_token_usage(stdout_text, model))
     efficiency["elapsed_seconds"] = round(time.time() - started, 2)
+    efficiency["timed_out"] = timed_out
+    if task_timeout is not None:
+        efficiency["task_timeout_seconds"] = task_timeout
     write_json(result_dir / "efficiency.json", efficiency)
     status = {
         "task": task_dir.name,
-        "returncode": proc.returncode,
+        "returncode": returncode,
         "elapsed_seconds": efficiency["elapsed_seconds"],
+        "timed_out": timed_out,
         "finished_at": datetime.now(timezone.utc).isoformat(),
     }
     write_json(result_dir / "status.json", status)
     return {
         "task": task_dir.name,
-        "status": "success" if proc.returncode == 0 else "failed",
-        "returncode": proc.returncode,
+        "status": "timeout" if timed_out else ("success" if returncode == 0 else "failed"),
+        "returncode": returncode,
+        "timed_out": timed_out,
         **efficiency,
     }
 
@@ -403,6 +551,7 @@ def run_cell(
     api_key_env: str,
     num_workers: int,
     dry_run: bool,
+    task_timeout: float | None = None,
 ) -> dict[str, object]:
     config = CELLS[cell_name]
     plugin_dir = prepare_plugin_dir(cell_name, config)
@@ -434,6 +583,7 @@ def run_cell(
             config=config,
             api_key_env=api_key_env,
             dry_run=dry_run,
+            task_timeout=task_timeout,
         )
 
     if num_workers <= 1:
@@ -474,8 +624,22 @@ def main() -> int:
     parser.add_argument("--api-base", default=DEFAULT_API_BASE)
     parser.add_argument("--api-key-env", default="OPENROUTER_API_KEY")
     parser.add_argument("--include", nargs="+")
-    parser.add_argument("--num-workers", type=int, default=1)
-    parser.add_argument("--cell-workers", type=int, default=1)
+    parser.add_argument("--num-workers", type=int, default=5)
+    parser.add_argument(
+        "--cell-workers",
+        type=int,
+        default=len(CELL_ORDER),
+        help=(
+            "Number of cells to run in parallel. Defaults to all known cells "
+            f"({len(CELL_ORDER)}) so every R/S/X/M cell launches simultaneously."
+        ),
+    )
+    parser.add_argument(
+        "--task-timeout",
+        type=float,
+        default=1500.0,
+        help="Per-task wall-clock timeout in seconds (default: 1500 = 25 min). Set to 0 to disable.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -483,6 +647,7 @@ def main() -> int:
         raise RuntimeError("--num-workers must be at least 1")
     if args.cell_workers < 1:
         raise RuntimeError("--cell-workers must be at least 1")
+    task_timeout: float | None = args.task_timeout if args.task_timeout and args.task_timeout > 0 else None
 
     unknown = [cell for cell in args.cells if cell not in CELLS]
     if unknown:
@@ -506,6 +671,7 @@ def main() -> int:
             api_key_env=args.api_key_env,
             num_workers=args.num_workers,
             dry_run=args.dry_run,
+            task_timeout=task_timeout,
         )
 
     if args.cell_workers <= 1:

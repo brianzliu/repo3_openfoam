@@ -1,0 +1,401 @@
+{
+  "subset_name": "foamgpt_subset_seed42_n30",
+  "n_cases": 30,
+  "pilot_5": [
+    "LadenburgJet60psi",
+    "boxTurb16",
+    "damBreak4phase",
+    "periodicCubeWater",
+    "squareBump"
+  ],
+  "by_domain": {
+    "multiphase": 4,
+    "incompressible": 4,
+    "combustion": 4,
+    "compressible": 3,
+    "heatTransfer": 3,
+    "mesh": 3,
+    "lagrangian": 3,
+    "discreteMethods": 2,
+    "molecularDynamics": 2,
+    "financial": 1,
+    "DNS": 1
+  },
+  "by_category": {
+    "None": 19,
+    "RAS": 4,
+    "laminar": 4,
+    "cavity": 1,
+    "Lagrangian": 1,
+    "hopper": 1
+  },
+  "by_solver": {
+    "buoyantFoam": 2,
+    "denseParticleFoam": 2,
+    "dsmcFoam": 2,
+    "mdEquilibrationFoam": 2,
+    "multiphaseEulerFoam": 1,
+    "driftFluxFoam": 1,
+    "compressibleMultiphaseInterFoam": 1,
+    "interFoam": 1,
+    "boundaryFoam": 1,
+    "icoFoam": 1,
+    "pimpleFoam": 1,
+    "shallowWaterFoam": 1,
+    "reactingFoam": 1,
+    "XiFoam": 1,
+    "chemFoam": 1,
+    "buoyantReactingFoam": 1,
+    "rhoCentralFoam": 1,
+    "rhoSimpleFoam": 1,
+    "rhoPimpleFoam": 1,
+    "chtMultiRegionFoam": 1,
+    "refineMesh": 1,
+    "foamyHexMesh": 1,
+    "blockMesh": 1,
+    "particleFoam": 1,
+    "financialFoam": 1,
+    "dnsFoam": 1
+  },
+  "cases_with_metadata": [
+    {
+      "case_name": "Grossetete",
+      "case_domain": "multiphase",
+      "case_category": "RAS",
+      "case_solver": "multiphaseEulerFoam",
+      "n_files": 3,
+      "required_files": [
+        "0/T.liquid",
+        "constant/physicalProperties.gas",
+        "system/fvSolution"
+      ]
+    },
+    {
+      "case_name": "dahl",
+      "case_domain": "multiphase",
+      "case_category": "RAS",
+      "case_solver": "driftFluxFoam",
+      "n_files": 3,
+      "required_files": [
+        "0/epsilon",
+        "0/nut",
+        "0/p_rgh"
+      ]
+    },
+    {
+      "case_name": "damBreak4phase",
+      "case_domain": "multiphase",
+      "case_category": "laminar",
+      "case_solver": "compressibleMultiphaseInterFoam",
+      "n_files": 5,
+      "required_files": [
+        "0/alpha.oil.orig",
+        "0/alpha.water.orig",
+        "constant/momentumTransport",
+        "constant/physicalProperties.mercury",
+        "system/controlDict"
+      ]
+    },
+    {
+      "case_name": "damBreakWithObstacle",
+      "case_domain": "multiphase",
+      "case_category": "laminar",
+      "case_solver": "interFoam",
+      "n_files": 3,
+      "required_files": [
+        "constant/momentumTransport",
+        "system/blockMeshDict",
+        "system/setFieldsDict"
+      ]
+    },
+    {
+      "case_name": "boundaryWallFunctionsProfile",
+      "case_domain": "incompressible",
+      "case_category": "None",
+      "case_solver": "boundaryFoam",
+      "n_files": 4,
+      "required_files": [
+        "0/epsilon",
+        "0/k",
+        "0/omega",
+        "constant/physicalProperties.template"
+      ]
+    },
+    {
+      "case_name": "cavityClipped",
+      "case_domain": "incompressible",
+      "case_category": "cavity",
+      "case_solver": "icoFoam",
+      "n_files": 1,
+      "required_files": [
+        "system/fvSolution"
+      ]
+    },
+    {
+      "case_name": "movingCone",
+      "case_domain": "incompressible",
+      "case_category": "laminar",
+      "case_solver": "pimpleFoam",
+      "n_files": 2,
+      "required_files": [
+        "constant/physicalProperties",
+        "system/controlDict"
+      ]
+    },
+    {
+      "case_name": "squareBump",
+      "case_domain": "incompressible",
+      "case_category": "None",
+      "case_solver": "shallowWaterFoam",
+      "n_files": 2,
+      "required_files": [
+        "0/hU.orig",
+        "constant/gravitationalProperties"
+      ]
+    },
+    {
+      "case_name": "aachenBomb",
+      "case_domain": "combustion",
+      "case_category": "Lagrangian",
+      "case_solver": "reactingFoam",
+      "n_files": 2,
+      "required_files": [
+        "0/Ydefault",
+        "constant/fvModels"
+      ]
+    },
+    {
+      "case_name": "moriyoshiHomogeneous",
+      "case_domain": "combustion",
+      "case_category": "RAS",
+      "case_solver": "XiFoam",
+      "n_files": 2,
+      "required_files": [
+        "0/b",
+        "system/blockMeshDict"
+      ]
+    },
+    {
+      "case_name": "nc7h16",
+      "case_domain": "combustion",
+      "case_category": "None",
+      "case_solver": "chemFoam",
+      "n_files": 1,
+      "required_files": [
+        "system/controlDict"
+      ]
+    },
+    {
+      "case_name": "smallPoolFire2D",
+      "case_domain": "combustion",
+      "case_category": "RAS",
+      "case_solver": "buoyantReactingFoam",
+      "n_files": 4,
+      "required_files": [
+        "0/ph_rgh.orig",
+        "constant/physicalProperties",
+        "system/controlDict",
+        "system/fvSchemes"
+      ]
+    },
+    {
+      "case_name": "LadenburgJet60psi",
+      "case_domain": "compressible",
+      "case_category": "None",
+      "case_solver": "rhoCentralFoam",
+      "n_files": 2,
+      "required_files": [
+        "constant/physicalProperties",
+        "system/mapFieldsDict"
+      ]
+    },
+    {
+      "case_name": "angledDuctExplicitFixedCoeff",
+      "case_domain": "compressible",
+      "case_category": "None",
+      "case_solver": "rhoSimpleFoam",
+      "n_files": 1,
+      "required_files": [
+        "0/k"
+      ]
+    },
+    {
+      "case_name": "helmholtzResonance",
+      "case_domain": "compressible",
+      "case_category": "laminar",
+      "case_solver": "rhoPimpleFoam",
+      "n_files": 2,
+      "required_files": [
+        "0/U",
+        "constant/physicalProperties"
+      ]
+    },
+    {
+      "case_name": "coolingSphere",
+      "case_domain": "heatTransfer",
+      "case_category": "None",
+      "case_solver": "chtMultiRegionFoam",
+      "n_files": 1,
+      "required_files": [
+        "system/topoSetDict"
+      ]
+    },
+    {
+      "case_name": "externalCoupledCavity",
+      "case_domain": "heatTransfer",
+      "case_category": "None",
+      "case_solver": "buoyantFoam",
+      "n_files": 5,
+      "required_files": [
+        "0/nut",
+        "0/p",
+        "constant/pRef",
+        "constant/physicalProperties",
+        "system/blockMeshDict"
+      ]
+    },
+    {
+      "case_name": "hotRoomBoussinesqSteady",
+      "case_domain": "heatTransfer",
+      "case_category": "None",
+      "case_solver": "buoyantFoam",
+      "n_files": 1,
+      "required_files": [
+        "system/setFieldsDict"
+      ]
+    },
+    {
+      "case_name": "refineFieldDirs",
+      "case_domain": "mesh",
+      "case_category": "None",
+      "case_solver": "refineMesh",
+      "n_files": 5,
+      "required_files": [
+        "system/controlDict",
+        "system/refineMeshDict.tier2",
+        "system/refineMeshDict.tier3",
+        "system/refineMeshDict.tier5",
+        "system/topoSetDict.range2"
+      ]
+    },
+    {
+      "case_name": "simpleShapes",
+      "case_domain": "mesh",
+      "case_category": "None",
+      "case_solver": "foamyHexMesh",
+      "n_files": 1,
+      "required_files": [
+        "system/meshQualityDict"
+      ]
+    },
+    {
+      "case_name": "sphere7ProjectedEdges",
+      "case_domain": "mesh",
+      "case_category": "None",
+      "case_solver": "blockMesh",
+      "n_files": 1,
+      "required_files": [
+        "system/fvSchemes"
+      ]
+    },
+    {
+      "case_name": "GoldschmidtMPPIC",
+      "case_domain": "lagrangian",
+      "case_category": "None",
+      "case_solver": "denseParticleFoam",
+      "n_files": 2,
+      "required_files": [
+        "constant/momentumTransport.air",
+        "constant/physicalProperties"
+      ]
+    },
+    {
+      "case_name": "cyclone",
+      "case_domain": "lagrangian",
+      "case_category": "None",
+      "case_solver": "denseParticleFoam",
+      "n_files": 1,
+      "required_files": [
+        "system/fvSchemes"
+      ]
+    },
+    {
+      "case_name": "hopperEmptying",
+      "case_domain": "lagrangian",
+      "case_category": "hopper",
+      "case_solver": "particleFoam",
+      "n_files": 2,
+      "required_files": [
+        "system/decomposeParDict",
+        "system/fvSchemes"
+      ]
+    },
+    {
+      "case_name": "freeSpacePeriodic",
+      "case_domain": "discreteMethods",
+      "case_category": "None",
+      "case_solver": "dsmcFoam",
+      "n_files": 3,
+      "required_files": [
+        "0/boundaryT",
+        "0/iDof",
+        "0/rhoN"
+      ]
+    },
+    {
+      "case_name": "supersonicCorner",
+      "case_domain": "discreteMethods",
+      "case_category": "None",
+      "case_solver": "dsmcFoam",
+      "n_files": 4,
+      "required_files": [
+        "0/boundaryU",
+        "0/fD",
+        "0/momentum",
+        "system/dsmcInitialiseDict"
+      ]
+    },
+    {
+      "case_name": "periodicCubeArgon",
+      "case_domain": "molecularDynamics",
+      "case_category": "None",
+      "case_solver": "mdEquilibrationFoam",
+      "n_files": 2,
+      "required_files": [
+        "system/decomposeParDict",
+        "system/fvSolution"
+      ]
+    },
+    {
+      "case_name": "periodicCubeWater",
+      "case_domain": "molecularDynamics",
+      "case_category": "None",
+      "case_solver": "mdEquilibrationFoam",
+      "n_files": 1,
+      "required_files": [
+        "system/mdEquilibrationDict"
+      ]
+    },
+    {
+      "case_name": "europeanCall",
+      "case_domain": "financial",
+      "case_category": "None",
+      "case_solver": "financialFoam",
+      "n_files": 2,
+      "required_files": [
+        "0/V",
+        "system/fvSolution"
+      ]
+    },
+    {
+      "case_name": "boxTurb16",
+      "case_domain": "DNS",
+      "case_category": "None",
+      "case_solver": "dnsFoam",
+      "n_files": 1,
+      "required_files": [
+        "system/fvSolution"
+      ]
+    }
+  ]
+}

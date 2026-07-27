@@ -207,6 +207,12 @@ def summarize_efficiency(run_dir: Path, per_case_names: list[str]) -> dict[str, 
             return None
         return round(sum(values) / len(values), 4)
 
+    def sum_for(key: str) -> float | None:
+        values = [float(entry[key]) for entry in entries if key in entry]
+        if not values:
+            return None
+        return round(sum(values), 6)
+
     summary = {
         "tool_count_definition": tool_definition,
         "n_cases": len(entries),
@@ -222,9 +228,16 @@ def summarize_efficiency(run_dir: Path, per_case_names: list[str]) -> dict[str, 
         "edit_calls",
         "bash_calls",
         "assistant_messages",
+        "llm_calls",
+        "api_usage_calls",
+        "estimated_usage_calls",
         "prompt_tokens",
         "completion_tokens",
+        "input_tokens",
+        "output_tokens",
         "total_tokens",
+        "helper_model_input_tokens",
+        "helper_model_output_tokens",
         "generated_file_events",
         "saved_file_events",
         "review_loops",
@@ -234,6 +247,26 @@ def summarize_efficiency(run_dir: Path, per_case_names: list[str]) -> dict[str, 
         mean_value = mean_for(key)
         if mean_value is not None:
             summary[f"mean_{key}_per_task"] = mean_value
+
+    # Token/cost totals across the run (input/output/total/cost), normalizing the
+    # two naming conventions: repo3 uses input/output_tokens, Foam Agent and
+    # MetaOpenFOAM use prompt/completion_tokens.
+    total_input = sum_for("input_tokens")
+    if total_input is None:
+        total_input = sum_for("prompt_tokens")
+    total_output = sum_for("output_tokens")
+    if total_output is None:
+        total_output = sum_for("completion_tokens")
+    if total_input is not None:
+        summary["total_input_tokens"] = int(total_input)
+    if total_output is not None:
+        summary["total_output_tokens"] = int(total_output)
+    total_tokens = sum_for("total_tokens")
+    if total_tokens is not None:
+        summary["total_tokens"] = int(total_tokens)
+    total_cost = sum_for("estimated_openrouter_cost_usd")
+    if total_cost is not None:
+        summary["total_estimated_openrouter_cost_usd"] = round(total_cost, 6)
 
     return summary
 

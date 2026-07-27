@@ -1,0 +1,73 @@
+{
+  "subset_name": "foamgpt_subset_seed42_n30",
+  "dataset_path": "/home/brianliu/FoamGPT/foamgpt_test.jsonl",
+  "selection": {
+    "method": "stratified_by_domain_existing5_forced",
+    "seed": 42,
+    "sample_size": 30,
+    "domain_allocation": {
+      "multiphase": 4,
+      "incompressible": 4,
+      "combustion": 4,
+      "compressible": 3,
+      "heatTransfer": 3,
+      "mesh": 3,
+      "lagrangian": 3,
+      "discreteMethods": 2,
+      "molecularDynamics": 2,
+      "financial": 1,
+      "DNS": 1
+    },
+    "existing_5_forced": [
+      "boundaryWallFunctionsProfile",
+      "Grossetete",
+      "helmholtzResonance",
+      "externalCoupledCavity",
+      "damBreakWithObstacle"
+    ]
+  },
+  "model": {
+    "provider": "openrouter",
+    "model": "deepseek/deepseek-v4-flash",
+    "anthropic_base_url": "https://openrouter.ai/api/anthropic"
+  },
+  "cases": [
+    "Grossetete",
+    "dahl",
+    "damBreak4phase",
+    "damBreakWithObstacle",
+    "boundaryWallFunctionsProfile",
+    "cavityClipped",
+    "movingCone",
+    "squareBump",
+    "aachenBomb",
+    "moriyoshiHomogeneous",
+    "nc7h16",
+    "smallPoolFire2D",
+    "LadenburgJet60psi",
+    "angledDuctExplicitFixedCoeff",
+    "helmholtzResonance",
+    "coolingSphere",
+    "externalCoupledCavity",
+    "hotRoomBoussinesqSteady",
+    "refineFieldDirs",
+    "simpleShapes",
+    "sphere7ProjectedEdges",
+    "GoldschmidtMPPIC",
+    "cyclone",
+    "hopperEmptying",
+    "freeSpacePeriodic",
+    "supersonicCorner",
+    "periodicCubeArgon",
+    "periodicCubeWater",
+    "europeanCall",
+    "boxTurb16"
+  ],
+  "pilot_5": [
+    "LadenburgJet60psi",
+    "boxTurb16",
+    "damBreak4phase",
+    "periodicCubeWater",
+    "squareBump"
+  ]
+}
